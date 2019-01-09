@@ -11,4 +11,4 @@ def req(request):
 
 def sendreq(request):
 	print(request)
-	return renderer.renderRequest(request,test=2)
+	return renderer.renderRequest(request,formobj=SoldTagForm)
