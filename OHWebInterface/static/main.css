@@ -1,0 +1,16 @@
+.formdiv:{
+	background-color:red;
+}
+
+.formcont{
+	background-color: red;
+}
+.test{
+	background-color: #f0f0f0;
+	align-content: center;
+	max-width:500px;
+	margin: 0 auto;
+	text-align: center;
+	border: 1px solid gray;
+	border-radius: 30px;
+}

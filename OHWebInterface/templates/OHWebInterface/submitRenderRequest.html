@@ -1,18 +1,24 @@
+
 {%extends "OHWebInterface/base.html"%}
 
 {%block pagecontent%}
-	<form action="submit" method="post">
+<div id='test' class='test'>
+	<form action="submit" method="post" id='formcont'>
 	{%csrf_token%}
 	{%for field in form%}
-
+		<div class="formdiv">
 					<span class='formcontlabel'>
 					{{field.label_tag}}</span>
 					<br>
 					<span class="formcontinp">{{field}}</span>
+					
+					<div class="errors">{{form.errors}}</div>
 					<p>
 				{%endfor%}
 				<input type='submit' value='Submit Request'></input>
+		</div>
 	</form>
+</div>
 {%endblock pagecontent%}
 
 {%block extra_js%}
