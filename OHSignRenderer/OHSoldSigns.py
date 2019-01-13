@@ -3,41 +3,59 @@
 from PIL import Image, ImageDraw, ImageFont#Python's Image Library 
 import os #used to save & load files, ensures compatability on all operating systems
 import random #random number generator
-import tempfile #makes random-named files & stores only until no longer being used
+#import tempfile #makes random-named files & stores only until no longer being used
 import io
 ###
 wd=os.getcwd()#folder script is stored in, used as relative point at which to save
-print(wd)
 ###
 #TEMPLATE DEFINITIONS
 fieldcorn=(.4,.8)
-ubuntum=os.path.join(wd,"OHSignRenderer","Fonts","Ubuntu","Ubuntu-M.ttf")
+ubuntum=os.path.join(wd,"Fonts","Ubuntu","Ubuntu-M.ttf")
+timesbd=os.path.join(wd,"Fonts","Times","timesbd.ttf")
 TEMPLATES={
     'BACK':{
-        'backblurb':{"Once you, the customer, have purchased an item, you are fully responsible for it. \nIf you choose to leave the item and return for it please attach this sign to it until \nyou return. Items must be picked up the same day they are purchased unless arrangements \nfor delivery through the store are made. By signing this form, you the customer \nacknowledge that Opportunity House is not responsible for any damage, re-sell, \nor loss of an item once it has been purchased, and NO REFUNDS will be given. \nDue to the minimum floor/storage space, of your item is left after close \nof the purchase date the store reserves the right to re-sell the item.":(.5,.3)},
-        'backmgmt':{"Thank you for your cooperation \nManagement":(.23,.7)},
-        'backfields':{"CUSTOMER NAME:":fieldcorn,"CUSTOMER SIGNATURE":tuple(map(sum,zip(fieldcorn,(0,.05)))),"PHONE #":tuple(map(sum,zip(fieldcorn,(0,.1)))), "DATE":tuple(map(sum,zip(fieldcorn,(.3,.1))))}
+        'backblurb':[{'text':"Once you, the customer, have purchased an item, you are fully responsible for it. \nIf you choose to leave the item and return for it please attach this sign to it until \nyou return. Items must be picked up the same day they are purchased unless arrangements \nfor delivery through the store are made. By signing this form, you the customer \nacknowledge that Opportunity House is not responsible for any damage, re-sell, \nor loss of an item once it has been purchased, and NO REFUNDS will be given. \nDue to the minimum floor/storage space, of your item is left after close \nof the purchase date the store reserves the right to re-sell the item.",'font':(ubuntum,9),'c':(.5,.3)}],
+        'backmgmt':[{'text':"Thank you for your cooperation \nManagement",'c':(.23,.7),'font':(ubuntum,9)}],
+        'backfields':[{'text':"CUSTOMER NAME:",'c':fieldcorn,'font':(ubuntum,9)},
+                      {'text':"CUSTOMER SIGNATURE",'c':tuple(map(sum,zip(fieldcorn,(0,.05)))),'font':(ubuntum,9)},
+                      {'text':"PHONE #",'c':tuple(map(sum,zip(fieldcorn,(0,.1)))),'font':(ubuntum,9)}, 
+                      {'text':"DATE",'c':tuple(map(sum,zip(fieldcorn,(.3,.1)))),'font':(ubuntum,9)}]
     },
     'FRONT':{
-        'fs':{"SOLD":(.5,.25)},
-        'fyn':{"YES":(.35,.75),"NO":(.5,.75)},
-        "frontbtm":{"*Please attach receipt if paid*":(.5,.85),"*All items must be picked up by end of day*":(.5,.95)},
-        "frontfields":{"Date:":(.5,.05),'Cashier Initials:':(.25,.6),'Customer Initials:':(.65,.6),'Paid:':(.25,.75)},
-        'lblloc':{'':(.1,.1)}
+        'fs':[{'text':"SOLD",'c':(.5,.25),'font':(ubuntum,90)}],
+        'fyn':[{'text':"YES",'c':(.35,.75),'font':(ubuntum,12)},
+               {'text':"NO",'c':(.5,.75),'font':(ubuntum,12)}],
+        "frontbtm":[{'text':"*Please attach receipt if paid*",'c':(.5,.85),'font': (ubuntum,12)},
+                    {'text':"*All items must be picked up by end of day*",'c':(.5,.95),'font': (ubuntum,12)}],
+                     
+        "frontfields":[{'text':"Date:",'c':(.5,.05),'font':(ubuntum,12)},
+                       {'text':'Cashier Initials:','c':(.25,.6),'font':(ubuntum,12)},
+                       {'text':'Customer Initials:','c':(.65,.6),'font':(ubuntum,12)},
+                       {'text':'Paid:','c':(.25,.75),'font':(ubuntum,12)}],
+        'lblloc':[{'c':(.1,.1),'font':(ubuntum,15),'text':'test'}]
     },
-    # 'NEW':{#box around sign, 2-3 per page,logo,underlines
-    #     {'textsize':12,}:{"Date":(),"Associates Initials":(), "Customer Name":(),"Customer Phone #":(),"Delivery Fee":(),"Date Paid":(),"Scheduled Delivery Date":()},
-    #     {'textsize':80,'font':ubuntum}:{'SOLD!':()},
-    #     {'textsize':12,'font':ubuntum}:{'Please pick up your items by the end of the day unless you have paid for us to Deliver it to you.':()},
-    #     {'textsize':10,'font':ubuntum}:{'Vacaville - $30.00':(),'Fairfield - $45.00':()},
-    # }
-#     'tagstyle':{'image':{'imsize':(5,3.53),'nxy':(1,1),'res':80},
-        #          'description':{'c':[.5,1/8],'size':60,'font':'timesbd.ttf'}, 
-        #          'price':{'c':[.5,3/8],"font":"timesbd.ttf",'size':120},
-        #          'barcode':{'c':[-.05,.65],'rot':0,'underbar':True,'shape':[5,100]},
-        #          'underbar':{'font':'MINI 7 Bold.ttf','underdist':10,'size':20},
-        #          'month':{'c':[.95,.9],"font":"timesbd.ttf","size":40},
-        #          'combo':{'c':[.5,.6],'font':'timesbd.ttf','size':20,'rot':20}})   
+     'NEW':{#box around sign, 2-3 per page,logo,underlines
+         '__IM':[{'rot':90,'res':80,'nxy':(1,2)}],
+         'test':[{'font':(ubuntum,12),'text':"Date",'c':(0.3,0)},
+                  {'font':(ubuntum,12),'c':(0.3,.1),'text':"Associates Initials"},
+                  {'c':(0.3,.2), 'font':(ubuntum,12),'text':"Customer Name"},
+                  {'c':(0.3,0),'font':(ubuntum,12),'text':"Customer Phone #"},
+                   {'font':(ubuntum,12),'text':"Delivery Fee",'c':(.5,.7)},
+                   {'font':(ubuntum,12),'text':"Date Paid",'c':(.5,.4)},
+                  {'font':(ubuntum,12),'text':"Scheduled Delivery Date",'c':(.5,.5)},
+                 {'font':(ubuntum,80),'text':'SOLD!','c':(.3,.5)},
+                 {'font':(ubuntum,12),'text':'Please pick up your items by the end of the day unless you have paid for us to Deliver it to you.'},
+         {'font':(ubuntum,10),'text':'Vacaville - $30.00','c':(0,.8)},
+         {'font':(ubuntum,10),'text':'Fairfield - $45.00','c':(0,.9)},
+     ]},
+     'TAG':{'__IM':[{'imsize':(5,3.53),'nxy':(1,1),'res':80}],
+                  'description':[{'c':[.5,1/8],'text':'test','font':(timesbd,60)}], 
+#                  'price':[{'c':[.5,3/8],"font":"timesbd.ttf",'size':120}],
+#                  'barcode':[{'c':[-.05,.65],'rot':0,'underbar':True,'shape':[5,100]}],
+#                  'underbar':[{'font':'MINI 7 Bold.ttf','underdist':10,'size':20}],
+#                  'month':[{'c':[.95,.9],"font":"timesbd.ttf","size":40}],
+#                  'combo':[{'c':[.5,.6],'font':'timesbd.ttf','size':20,'rot':20}]
+}   
     #    
 # furnstyle=pandas.DataFrame({'image':{'imsize':(8.5,11),'nxy':(2,5),'res':150},
 #          'description':{'c':[.15,4.5/8],'size':20,'font':'timesbd.ttf','text':'Description:'}, 
@@ -57,33 +75,41 @@ def soldTag(res=100, n=(2,6),lbl=None,side='front'):
     tagsize=(round(res*8.5/n[0]),round(res*11.0/n[1]))    
     tag=Image.new('L',tagsize,color="white")
     dtag=ImageDraw.Draw(tag)
-    TEMPLATES['FRONT']['lbltxt']={str(lbl):TEMPLATES['FRONT']['lblloc']['']}
-    def centertext(d,font,justify='center',line=0,autopar=False):        
+#    TEMPLATES['FRONT']['lbltxt']={str(lbl):TEMPLATES['FRONT']['lblloc']['']}
+    def centertext(d,justify='center',line=0,autopar=False):        
       
-        for string in d.keys():
-            locrat=d[string]
-            attsize=ImageDraw.ImageDraw.multiline_textsize(dtag,text=string, font=font)
-
-            if justify=='center':
-                justamt=[.5*i for i in attsize]
-            elif justify=='left':
-                justamt=(attsize[0]/2,0)
-            dtag.multiline_text([round(tagsize[i]*locrat[i]-justamt[i]) for i in range(2)],string,anchor='center',font=font)#takes the size of the tag, multiplies it by location ratio, then subtracts pixelsize of text - needed bc default action of text is to go from top-left corner, this ends up doing from the center
-            #add line here
-
-    if side=='front':
-        frnt=TEMPLATES['FRONT']
-        centertext(frnt['fs'],  font=ImageFont.truetype(ubuntum,90)) 
-        centertext(frnt['fyn'],  font=ImageFont.truetype(ubuntum,12))
-        centertext(frnt['frontbtm'],  font=ImageFont.truetype(ubuntum,12))
-        centertext(frnt['frontfields'],  font=ImageFont.truetype(ubuntum,12))
-        centertext(frnt['lbltxt'],  font=ImageFont.truetype(ubuntum,15))
-    elif side=='back':
-        bck=TEMPLATES['BACK']
-        centertext(bck['backmgmt'],  font=ImageFont.truetype(ubuntum,9),justify='center') 
-        centertext(bck['backfields'],  font=ImageFont.truetype(ubuntum,9),justify='center') 
-        centertext(bck['backblurb'],  font=ImageFont.truetype(ubuntum,9),justify='center') 
-        
+        for att in d:
+            if 'c' in att.keys():
+                locrat=att['c']
+    
+                font=ImageFont.truetype(*att['font'])
+                attsize=ImageDraw.ImageDraw.multiline_textsize(dtag,text=att['text'], font=font)
+    
+                if justify=='center':
+                    justamt=[.5*i for i in attsize]
+                elif justify=='left':
+                    justamt=(attsize[0]/2,0)
+                dtag.multiline_text([round(tagsize[i]*locrat[i]-justamt[i]) for i in range(2)],att['text'],anchor='center',font=font)#takes the size of the tag, multiplies it by location ratio, then subtracts pixelsize of text - needed bc default action of text is to go from top-left corner, this ends up doing from the center
+                #add line here
+    if side.upper() in TEMPLATES.keys():
+        for t in TEMPLATES[side.upper()].keys():
+            for field in TEMPLATES[side.upper()][t]:
+                centertext(TEMPLATES[side.upper()][t])
+#    else:
+#        print(side)
+#    if side=='front':
+#        frnt=TEMPLATES['FRONT']
+##        centertext(frnt['fs'],  font=) 
+##        centertext(frnt['fyn'],  font=)
+##        centertext(frnt['frontbtm'],  )
+##        centertext(frnt['frontfields'],  font=ImageFont.truetype(ubuntum,12))
+#        centertext(frnt['lbltxt'],  font=ImageFont.truetype(ubuntum,15))
+#    elif side=='back':
+#        bck=TEMPLATES['BACK']
+#        centertext(bck['backmgmt'],  font=ImageFont.truetype(ubuntum,9),justify='center') 
+#        centertext(bck['backfields'],  font=ImageFont.truetype(ubuntum,9),justify='center') 
+#        centertext(bck['backblurb'],  font=ImageFont.truetype(ubuntum,9),justify='center') 
+#        
         
     else:
         return None
