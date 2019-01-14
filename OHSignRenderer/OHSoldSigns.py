@@ -76,14 +76,15 @@ TEMPLATES={
 #### 
 #FUNCTIONS
 #
-ORIENTATIONS={'landscape':(8.5,11),'portrait':(11,8.5)}
+ORIENTATIONS={'portrait':(8.5,11),'landscape':(11,8.5)}
 def newSoldTag(res=100,n=(2,6),lbl=None,side='newsold'):
   pass
-def soldTag(res=100, n=(2,6),lbl=None,side='oldsold-front',orientation='landscape'):
+def soldTag(res=100, n=(2,6),lbl=None,side='oldsold-front',orientation='portrait'):
     o=ORIENTATIONS[orientation]
     tagsize=(round(res*o[0]/n[0]),round(res*o[1]/n[1]))    
     tag=Image.new('L',tagsize,color="white")
     dtag=ImageDraw.Draw(tag)
+    print(orientation)
 #    TEMPLATES['FRONT']['lbltxt']={str(lbl):TEMPLATES['FRONT']['lblloc']['']}
     def centertext(d,justify='center',line=0,autopar=False):        
       
@@ -134,8 +135,9 @@ def soldTag(res=100, n=(2,6),lbl=None,side='oldsold-front',orientation='landscap
 
 
 #objfn - what to sheetify, n - number of modules in (x-direction, y-direction), lw - linewidth, res - resolution
-def sheetify(objfn,n=(2,6),lw=3,res=100,lbllist=None,side='oldsold-front'):
+def sheetify(objfn,n=(2,6),lw=3,res=100,lbllist=None,side='oldsold-front',orientation='portrait'):
     N=n[0]*n[1]
+    o=ORIENTATIONS[orientation]
     if len(n)==2:
         nx,ny=n 
     else:
@@ -145,22 +147,22 @@ def sheetify(objfn,n=(2,6),lw=3,res=100,lbllist=None,side='oldsold-front'):
         lbllist=['' for x in range(N)]
     elif len(lbllist)<N:
         [lbllist.append('') for x in range(N-len(lbllist))]
-    sheetsize=(round(res*8.5),round(res*11.0))#fits to 8.5"x11" sheet
+    sheetsize=(round(res*o[0]),round(res*o[1]))#fits to 8.5"x11" sheet
     shtbox=(0,0,round(sheetsize[0]/nx),round(sheetsize[1]/ny))
     sheet=Image.new('RGB',sheetsize,color='white')#image basefile
     drsh=ImageDraw.Draw(sheet)#drawing
     for i in range(nx): 
         for j in range(ny):
             nn=i*n[1]+j#gets current index 1-dimensionally - if order of fors changes this needs to change too
-            obj=objfn(res,n,lbl=lbllist[nn],side=side)
+            obj=objfn(res,n,lbl=lbllist[nn],side=side,orientation=orientation)
             sheet.paste(obj,[round(x) for x in [shtbox[0]+i*shtbox[2],shtbox[1]+j*shtbox[3],shtbox[0]+i*shtbox[2]+obj.size[0],shtbox[1]+j*shtbox[3]+obj.size[1]]])
             drsh.line( (0,j*sheetsize[1]/ny,sheetsize[0],j*sheetsize[1]/ny), fill=0,width=lw) #horizontals
         drsh.line( (i*sheetsize[0]/nx,0,i*sheetsize[0]/nx,sheetsize[1]), fill=0,width=lw) #vertical
     return sheet
-def multiSheetRender(objfn,sides=['oldsold-front','oldsold-back'],n=(2,6),lw=3,res=100,lbllist=None):
+def multiSheetRender(objfn,sides=['oldsold-front','oldsold-back'],n=(2,6),lw=3,res=100,lbllist=None,orientation='portrait'):
     sheets=[]
     for s in sides:
-        sheets.append(sheetify(objfn,n,lw,res,lbllist,side=s))
+        sheets.append(sheetify(objfn,n,lw,res,lbllist,side=s,orientation=orientation))
     return sheets
         
 #
@@ -189,12 +191,12 @@ def randomLabels(n=(2,6),numspots=2):
     return ralph
 #highest-level method for this file, can just run w/o arguments for good output
     #
-def renderSheets(n=(2,6),lw=3,res=100,lblmethod='random',numsheets=1,sides=['oldsold-front'],lbldsides=None):
+def renderSheets(n=(2,6),lw=3,res=100,lblmethod='random',numsheets=1,sides=['oldsold-front'],lbldsides=None,orientation='portrait'):
     sheets=[]
     for sht in range(numsheets):
         if lblmethod=='random':
             lbllist=randomLabels(n=n)
-        sheets.append(multiSheetRender(objfn=soldTag,n=n,lw=lw,res=res,lbllist=lbllist,sides=sides))
+        sheets.append(multiSheetRender(objfn=soldTag,n=n,lw=lw,res=res,lbllist=lbllist,sides=sides,orientation=orientation))
     return sheets
 #
 def saveSheets(sheets,fn=None):

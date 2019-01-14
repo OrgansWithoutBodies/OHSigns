@@ -16,5 +16,6 @@ class SoldTagForm(forms.Form):#@todo gets connected to chapter/book parse functi
     numsheets=forms.IntegerField(min_value=1,max_value=100,label="Number of Sheets to render",initial=1)
     
     sides=forms.MultipleChoiceField(choices=opts,label="Which templates to use")
+    orientation=forms.ChoiceField(choices=(('landscape','Landscape'),('portrait','Portrait')),label='Orientation')
     lblmethod=forms.ChoiceField(choices=lbls,label="How to label tags (TBD)")
     
