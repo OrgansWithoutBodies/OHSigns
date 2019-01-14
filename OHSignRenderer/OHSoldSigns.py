@@ -6,14 +6,15 @@ import random #random number generator
 #import tempfile #makes random-named files & stores only until no longer being used
 import io
 ###
-wd=os.getcwd()#folder script is stored in, used as relative point at which to save
+wd=os.path.abspath(os.path.dirname(__file__))#folder script is stored in, used as relative point at which to save
 ###
 #TEMPLATE DEFINITIONS
 fieldcorn=(.4,.8)
 ubuntum=os.path.join(wd,"Fonts","Ubuntu","Ubuntu-M.ttf")
 timesbd=os.path.join(wd,"Fonts","Times","timesbd.ttf")
 TEMPLATES={
-    'BACK':{
+    'OLDSOLD-BACK':{
+            '__IM':[{'key':"BCK",}],#@todo switch keys reliably
         'backblurb':[{'text':"Once you, the customer, have purchased an item, you are fully responsible for it. \nIf you choose to leave the item and return for it please attach this sign to it until \nyou return. Items must be picked up the same day they are purchased unless arrangements \nfor delivery through the store are made. By signing this form, you the customer \nacknowledge that Opportunity House is not responsible for any damage, re-sell, \nor loss of an item once it has been purchased, and NO REFUNDS will be given. \nDue to the minimum floor/storage space, of your item is left after close \nof the purchase date the store reserves the right to re-sell the item.",'font':(ubuntum,9),'c':(.5,.3)}],
         'backmgmt':[{'text':"Thank you for your cooperation \nManagement",'c':(.23,.7),'font':(ubuntum,9)}],
         'backfields':[{'text':"CUSTOMER NAME:",'c':fieldcorn,'font':(ubuntum,9)},
@@ -21,7 +22,8 @@ TEMPLATES={
                       {'text':"PHONE #",'c':tuple(map(sum,zip(fieldcorn,(0,.1)))),'font':(ubuntum,9)}, 
                       {'text':"DATE",'c':tuple(map(sum,zip(fieldcorn,(.3,.1)))),'font':(ubuntum,9)}]
     },
-    'FRONT':{
+    'OLDSOLD-FRONT':{
+            '__IM':[{}],
         'fs':[{'text':"SOLD",'c':(.5,.25),'font':(ubuntum,90)}],
         'fyn':[{'text':"YES",'c':(.35,.75),'font':(ubuntum,12)},
                {'text':"NO",'c':(.5,.75),'font':(ubuntum,12)}],
@@ -34,19 +36,22 @@ TEMPLATES={
                        {'text':'Paid:','c':(.25,.75),'font':(ubuntum,12)}],
         'lblloc':[{'c':(.1,.1),'font':(ubuntum,15),'text':'test'}]
     },
-     'NEW':{#box around sign, 2-3 per page,logo,underlines
+     'NEWSOLD':{#box around sign, 2-3 per page,logo,underlines
          '__IM':[{'rot':90,'res':80,'nxy':(1,2)}],
-         'test':[{'font':(ubuntum,12),'text':"Date",'c':(0.3,0)},
-                  {'font':(ubuntum,12),'c':(0.3,.1),'text':"Associates Initials"},
-                  {'c':(0.3,.2), 'font':(ubuntum,12),'text':"Customer Name"},
-                  {'c':(0.3,0),'font':(ubuntum,12),'text':"Customer Phone #"},
-                   {'font':(ubuntum,12),'text':"Delivery Fee",'c':(.5,.7)},
-                   {'font':(ubuntum,12),'text':"Date Paid",'c':(.5,.4)},
-                  {'font':(ubuntum,12),'text':"Scheduled Delivery Date",'c':(.5,.5)},
-                 {'font':(ubuntum,80),'text':'SOLD!','c':(.3,.5)},
-                 {'font':(ubuntum,12),'text':'Please pick up your items by the end of the day unless you have paid for us to Deliver it to you.'},
-         {'font':(ubuntum,10),'text':'Vacaville - $30.00','c':(0,.8)},
-         {'font':(ubuntum,10),'text':'Fairfield - $45.00','c':(0,.9)},
+         'test':[{'font':(ubuntum,12),'text':"Item Description",'c':(0.3,0.25)},
+                 {'font':(ubuntum,12),'text':"Date",'c':(0.3,0.3)},
+                  {'font':(ubuntum,12),'c':(0.4,.55),'text':"Associates Initials"},
+                  {'c':(0.2,.6), 'font':(ubuntum,12),'text':"Customer Name"},
+                  {'c':(0.25,.65),'font':(ubuntum,12),'text':"Customer Phone #"},
+                   {'font':(ubuntum,12),'text':"Delivery Fee",'c':(.2,.7)},
+                   {'font':(ubuntum,12),'text':"Date Paid",'c':(.6,.7)},
+                  {'font':(ubuntum,12),'text':"Scheduled Delivery Date",'c':(.3,.75)},
+                 {'font':(ubuntum,80),'text':'SOLD!','c':(.5,.4)},
+                 {'font':(ubuntum,12),'c':(.5,.8),'text':'Please pick up your items by the end of the day \nunless you have paid for us to Deliver it to you.'},
+         
+                   {'font':(ubuntum,12),'text':"Delivery fees",'c':(.2,.9)},
+            {'font':(ubuntum,10),'text':'Vacaville - $30.00','c':(0.5,.9)},
+         {'font':(ubuntum,10),'text':'Fairfield - $45.00','c':(0.5,.935)},
      ]},
      'TAG':{'__IM':[{'imsize':(5,3.53),'nxy':(1,1),'res':80}],
                   'description':[{'c':[.5,1/8],'text':'test','font':(timesbd,60)}], 
@@ -71,8 +76,12 @@ TEMPLATES={
 #### 
 #FUNCTIONS
 #
-def soldTag(res=100, n=(2,6),lbl=None,side='front'):
-    tagsize=(round(res*8.5/n[0]),round(res*11.0/n[1]))    
+ORIENTATIONS={'landscape':(8.5,11),'portrait':(11,8.5)}
+def newSoldTag(res=100,n=(2,6),lbl=None,side='newsold'):
+  pass
+def soldTag(res=100, n=(2,6),lbl=None,side='oldsold-front',orientation='landscape'):
+    o=ORIENTATIONS[orientation]
+    tagsize=(round(res*o[0]/n[0]),round(res*o[1]/n[1]))    
     tag=Image.new('L',tagsize,color="white")
     dtag=ImageDraw.Draw(tag)
 #    TEMPLATES['FRONT']['lbltxt']={str(lbl):TEMPLATES['FRONT']['lblloc']['']}
@@ -95,6 +104,7 @@ def soldTag(res=100, n=(2,6),lbl=None,side='front'):
         for t in TEMPLATES[side.upper()].keys():
             for field in TEMPLATES[side.upper()][t]:
                 centertext(TEMPLATES[side.upper()][t])
+    
 #    else:
 #        print(side)
 #    if side=='front':
@@ -114,12 +124,17 @@ def soldTag(res=100, n=(2,6),lbl=None,side='front'):
     else:
         return None
     
-    
+    if side.upper()=='NEWSOLD':
+        corns=((.025,.05),(.975,.95))
+        coords=[round(tagsize[i]*corns[j][i]) for j in range(2) for i in range(2)]
+        logo=Image.open(os.path.join(wd,"Logo","NewLogoCentered.png"))
+        tag.paste(logo.resize((round(tagsize[0]/2),80)),(round(tagsize[0]/4),round(tagsize[1]*.05)))
+        dtag.rectangle(coords,width=2,outline='black')
     return tag 
 
 
 #objfn - what to sheetify, n - number of modules in (x-direction, y-direction), lw - linewidth, res - resolution
-def sheetify(objfn,n=(2,6),lw=3,res=100,lbllist=None,side='front'):
+def sheetify(objfn,n=(2,6),lw=3,res=100,lbllist=None,side='oldsold-front'):
     N=n[0]*n[1]
     if len(n)==2:
         nx,ny=n 
@@ -142,9 +157,9 @@ def sheetify(objfn,n=(2,6),lw=3,res=100,lbllist=None,side='front'):
             drsh.line( (0,j*sheetsize[1]/ny,sheetsize[0],j*sheetsize[1]/ny), fill=0,width=lw) #horizontals
         drsh.line( (i*sheetsize[0]/nx,0,i*sheetsize[0]/nx,sheetsize[1]), fill=0,width=lw) #vertical
     return sheet
-def frontAndBack(objfn,n=(2,6),lw=3,res=100,lbllist=None):
+def multiSheetRender(objfn,sides=['oldsold-front','oldsold-back'],n=(2,6),lw=3,res=100,lbllist=None):
     sheets=[]
-    for s in ['front','back']:
+    for s in sides:
         sheets.append(sheetify(objfn,n,lw,res,lbllist,side=s))
     return sheets
         
@@ -174,12 +189,12 @@ def randomLabels(n=(2,6),numspots=2):
     return ralph
 #highest-level method for this file, can just run w/o arguments for good output
     #
-def renderSheets(n=(2,6),lw=3,res=100,lblmethod='random',numsheets=1):
+def renderSheets(n=(2,6),lw=3,res=100,lblmethod='random',numsheets=1,sides=['oldsold-front'],lbldsides=None):
     sheets=[]
     for sht in range(numsheets):
         if lblmethod=='random':
             lbllist=randomLabels(n=n)
-        sheets.append(frontAndBack(objfn=soldTag,n=n,lw=lw,res=res,lbllist=lbllist))
+        sheets.append(multiSheetRender(objfn=soldTag,n=n,lw=lw,res=res,lbllist=lbllist,sides=sides))
     return sheets
 #
 def saveSheets(sheets,fn=None):
@@ -188,7 +203,7 @@ def saveSheets(sheets,fn=None):
         fl=io.BytesIO(fn)
         
     else:
-        fl=open(os.path.join(wd,'OHSignRenderer','static','renderedSigns',fn),'wb+')
+        fl=open(os.path.join(wd,'static','renderedSigns',fn),'wb+')
         
     sheets[0][0].save(fp=fl,format='PDF',save_all=True,append_images=[pg for sht in sheets for pg in sht if pg!=sheets[0][0]]) 
     return fl,fn

@@ -4,7 +4,7 @@ from OHSignRenderer import views as renderer
 # Create your views here.
 def req(request):
 	context={
-	'form':SoldTagForm
+	'form':SoldTagForm,
 	}
 
 	return render(request,"OHWebInterface/submitRenderRequest.html",context)
