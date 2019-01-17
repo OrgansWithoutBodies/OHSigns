@@ -20,7 +20,6 @@ def renderRequest(request,formobj,**kw):
         if form.is_valid():
             data=form.cleaned_data
             data['n']=(data['nx'],data['ny'])
-            data['res']=100
             data['lblmethod']='random'
             print(data['sides'])
         else:
@@ -30,7 +29,7 @@ def renderRequest(request,formobj,**kw):
     print(data)
     # fn=os.path.join(os.getcwd(),'renderedSigns','temp.pdf')
     f='temp.pdf'
-    r=signs.renderSheets(n=data['n'],lw=data['lw'],orientation=data['orientation'],res=data['res'],lblmethod=data['lblmethod'],numsheets=data['numsheets'],sides=data['sides'])
+    r=signs.renderSheets(n=data['n'],lw=data['lw'],orientation=data['orientation'],numrandspots=data['numrandspots'],res=data['res'],lblmethod=data['lblmethod'],numsheets=data['numsheets'],sides=data['sides'])
     fl,fn=signs.saveSheets(r,fn=f)
     
     # response=FileResponse(fl,as_attachment=True,filename='test.pdf')

@@ -34,7 +34,7 @@ TEMPLATES={
                        {'text':'Cashier Initials:','c':(.25,.6),'font':(ubuntum,12)},
                        {'text':'Customer Initials:','c':(.65,.6),'font':(ubuntum,12)},
                        {'text':'Paid:','c':(.25,.75),'font':(ubuntum,12)}],
-        'lblloc':[{'c':(.1,.1),'font':(ubuntum,15),'text':'test'}]
+        'lbl':[{'c':(.1,.1),'font':(ubuntum,15),'text':'test'}]
     },
      'NEWSOLD':{#box around sign, 2-3 per page,logo,underlines
          '__IM':[{'rot':90,'res':80,'nxy':(1,2)}],
@@ -52,9 +52,12 @@ TEMPLATES={
                    {'font':(ubuntum,12),'text':"Delivery fees",'c':(.2,.9)},
             {'font':(ubuntum,10),'text':'Vacaville - $30.00','c':(0.5,.9)},
          {'font':(ubuntum,10),'text':'Fairfield - $45.00','c':(0.5,.935)},
-     ]},
+     ],
+     'lbl':[{'c':(.1,.1),'font':(ubuntum,15),'text':'test'}]},
      'TAG':{'__IM':[{'imsize':(5,3.53),'nxy':(1,1),'res':80}],
-                  'description':[{'c':[.5,1/8],'text':'test','font':(timesbd,60)}], 
+     'lbl':[{'c':(.1,.1),'font':(ubuntum,15),'text':'test'}],
+                  'description':[{'c':[.5,1/8],'text':'test','font':(timesbd,60)}],
+
 #                  'price':[{'c':[.5,3/8],"font":"timesbd.ttf",'size':120}],
 #                  'barcode':[{'c':[-.05,.65],'rot':0,'underbar':True,'shape':[5,100]}],
 #                  'underbar':[{'font':'MINI 7 Bold.ttf','underdist':10,'size':20}],
@@ -81,25 +84,27 @@ def newSoldTag(res=100,n=(2,6),lbl=None,side='newsold'):
   pass
 def soldTag(res=100, n=(2,6),lbl=None,side='oldsold-front',orientation='portrait'):
     o=ORIENTATIONS[orientation]
+    relres=res/100
     tagsize=(round(res*o[0]/n[0]),round(res*o[1]/n[1]))    
     tag=Image.new('L',tagsize,color="white")
     dtag=ImageDraw.Draw(tag)
     print(orientation)
-#    TEMPLATES['FRONT']['lbltxt']={str(lbl):TEMPLATES['FRONT']['lblloc']['']}
+    if 'lbl' in TEMPLATES[side].keys():
+        TEMPLATES[side]['lbl'][0]['text']=str(lbl)
     def centertext(d,justify='center',line=0,autopar=False):        
       
         for att in d:
             if 'c' in att.keys():
                 locrat=att['c']
     
-                font=ImageFont.truetype(*att['font'])
+                font=ImageFont.truetype(att['font'][0],round(att['font'][1]*relres))
                 attsize=ImageDraw.ImageDraw.multiline_textsize(dtag,text=att['text'], font=font)
     
                 if justify=='center':
                     justamt=[.5*i for i in attsize]
                 elif justify=='left':
                     justamt=(attsize[0]/2,0)
-                dtag.multiline_text([round(tagsize[i]*locrat[i]-justamt[i]) for i in range(2)],att['text'],anchor='center',font=font)#takes the size of the tag, multiplies it by location ratio, then subtracts pixelsize of text - needed bc default action of text is to go from top-left corner, this ends up doing from the center
+                dtag.multiline_text([round((tagsize[i]*locrat[i]-justamt[i])) for i in range(2)],att['text'],anchor='center',font=font)#takes the size of the tag, multiplies it by location ratio, then subtracts pixelsize of text - needed bc default action of text is to go from top-left corner, this ends up doing from the center
                 #add line here
     if side.upper() in TEMPLATES.keys():
         for t in TEMPLATES[side.upper()].keys():
@@ -129,7 +134,7 @@ def soldTag(res=100, n=(2,6),lbl=None,side='oldsold-front',orientation='portrait
         corns=((.025,.05),(.975,.95))
         coords=[round(tagsize[i]*corns[j][i]) for j in range(2) for i in range(2)]
         logo=Image.open(os.path.join(wd,"Logo","NewLogoCentered.png"))
-        tag.paste(logo.resize((round(tagsize[0]/2),80)),(round(tagsize[0]/4),round(tagsize[1]*.05)))
+        tag.paste(logo.resize((round(tagsize[0]/2),round(tagsize[1]/10))),(round(tagsize[0]/4),round(tagsize[1]*.05)))
         dtag.rectangle(coords,width=2,outline='black')
     return tag 
 
@@ -191,11 +196,16 @@ def randomLabels(n=(2,6),numspots=2):
     return ralph
 #highest-level method for this file, can just run w/o arguments for good output
     #
-def renderSheets(n=(2,6),lw=3,res=100,lblmethod='random',numsheets=1,sides=['oldsold-front'],lbldsides=None,orientation='portrait'):
+def renderSheets(n=(2,6),lw=3,res=100,lblmethod='random',numsheets=1,sides=['oldsold-front'],lbldsides=None,orientation='portrait',numrandspots=2):
     sheets=[]
+    if type(numrandspots)!=int:
+        try:
+            numrandspots=int(numrandspots)
+        except:
+            pass
     for sht in range(numsheets):
         if lblmethod=='random':
-            lbllist=randomLabels(n=n)
+            lbllist=randomLabels(n=n,numspots=numrandspots)
         sheets.append(multiSheetRender(objfn=soldTag,n=n,lw=lw,res=res,lbllist=lbllist,sides=sides,orientation=orientation))
     return sheets
 #

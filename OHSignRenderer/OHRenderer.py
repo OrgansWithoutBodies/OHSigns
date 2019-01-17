@@ -31,12 +31,13 @@ class Module(object):#graphical object representing certain aspect of sign, can 
         TEMPLATES['FRONT']['lbltxt']={str(lbl):TEMPLATES['FRONT']['lblloc']['']}
 
     def renderSubModules(self):
-        pass
+        self.renderedSubs=[]
         for s in self.submodules:
-            pass
+            self.renderedSubs.append(s.renderModule())
+
     def renderModule(self):
         self.MOD=None
-        
+        return self.MOD
 class TextModule(Module):
     def __init__(self,text,font,size,justification,**kw):
         self.inputs.add({''})
@@ -47,7 +48,9 @@ class TextModule(Module):
 class BarcodeModule(Module):
     def __init__(self,code,dims,encoding='128',**kw):
         pass
-
+    def renderModule(self):
+      self.MOD=code128.image(self.code,thickness=round(self.relres*self.dims[0]),height=round(self.relres*self.dims[1]))
+      return self.MOD
 class ShapeModule(Module):
     def __init__(self,type,**kw):
         pass
