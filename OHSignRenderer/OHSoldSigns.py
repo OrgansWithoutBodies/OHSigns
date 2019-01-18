@@ -5,6 +5,7 @@ import os #used to save & load files, ensures compatability on all operating sys
 import random #random number generator
 #import tempfile #makes random-named files & stores only until no longer being used
 import io
+import code128
 ###
 wd=os.path.abspath(os.path.dirname(__file__))#folder script is stored in, used as relative point at which to save
 ###
@@ -12,6 +13,8 @@ wd=os.path.abspath(os.path.dirname(__file__))#folder script is stored in, used a
 fieldcorn=(.4,.8)
 ubuntum=os.path.join(wd,"Fonts","Ubuntu","Ubuntu-M.ttf")
 timesbd=os.path.join(wd,"Fonts","Times","timesbd.ttf")
+mini7=os.path.join(wd,"Fonts",'Misc',"MINI 7 Bold.ttf")
+VAR=''
 TEMPLATES={
     'OLDSOLD-BACK':{
             '__IM':[{'key':"BCK",}],#@todo switch keys reliably
@@ -34,18 +37,18 @@ TEMPLATES={
                        {'text':'Cashier Initials:','c':(.25,.6),'font':(ubuntum,12)},
                        {'text':'Customer Initials:','c':(.65,.6),'font':(ubuntum,12)},
                        {'text':'Paid:','c':(.25,.75),'font':(ubuntum,12)}],
-        'lbl':[{'c':(.1,.1),'font':(ubuntum,15),'text':'test'}]
+        'lbl':[{'c':(.1,.1),'font':(ubuntum,15),'text':VAR}]
     },
      'NEWSOLD':{#box around sign, 2-3 per page,logo,underlines
          '__IM':[{'rot':90,'res':80,'nxy':(1,2)}],
-         'test':[{'font':(ubuntum,12),'text':"Item Description",'c':(0.3,0.25)},
-                 {'font':(ubuntum,12),'text':"Date",'c':(0.3,0.3)},
-                  {'font':(ubuntum,12),'c':(0.4,.55),'text':"Associates Initials"},
-                  {'c':(0.2,.6), 'font':(ubuntum,12),'text':"Customer Name"},
-                  {'c':(0.25,.65),'font':(ubuntum,12),'text':"Customer Phone #"},
-                   {'font':(ubuntum,12),'text':"Delivery Fee",'c':(.2,.7)},
-                   {'font':(ubuntum,12),'text':"Date Paid",'c':(.6,.7)},
-                  {'font':(ubuntum,12),'text':"Scheduled Delivery Date",'c':(.3,.75)},
+         'test':[{'font':(ubuntum,12),'text':"Item Description:",'bar':('after',15),'c':(0.3,0.25)},
+                 {'font':(ubuntum,12),'text':"Date:",'c':(0.3,0.3),'bar':('after',15)},
+                  {'font':(ubuntum,12),'c':(0.4,.55),'text':"Associates Initials:",'bar':('after',15)},
+                  {'c':(0.2,.6), 'font':(ubuntum,12),'text':"Customer Name:",'bar':('after',15)},
+                  {'c':(0.215,.65),'font':(ubuntum,12),'text':"Customer Phone #:",'bar':('after',15)},
+                   {'font':(ubuntum,12),'text':"Delivery Fee:",'c':(.175,.7),'bar':('after',10)},
+                   {'font':(ubuntum,12),'text':"Date Paid:",'c':(.6,.7),'bar':('after',10)},
+                  {'font':(ubuntum,12),'text':"Scheduled Delivery Date:",'c':(.3,.75),'bar':('after',15)},
                  {'font':(ubuntum,80),'text':'SOLD!','c':(.5,.4)},
                  {'font':(ubuntum,12),'c':(.5,.8),'text':'Please pick up your items by the end of the day \nunless you have paid for us to Deliver it to you.'},
          
@@ -53,10 +56,17 @@ TEMPLATES={
             {'font':(ubuntum,10),'text':'Vacaville - $30.00','c':(0.5,.9)},
          {'font':(ubuntum,10),'text':'Fairfield - $45.00','c':(0.5,.935)},
      ],
-     'lbl':[{'c':(.1,.1),'font':(ubuntum,15),'text':'test'}]},
+     'lbl':[{'c':(.1,.1),'font':(ubuntum,15),'text':VAR}]},
      'TAG':{'__IM':[{'imsize':(5,3.53),'nxy':(1,1),'res':80}],
-     'lbl':[{'c':(.1,.1),'font':(ubuntum,15),'text':'test'}],
-                  'description':[{'c':[.5,1/8],'text':'test','font':(timesbd,60)}],
+            'lbl':[{'c':(.1,.1),'font':(ubuntum,15),'text':'test'}],
+            'description':[{'c':[.5,1/8],'text':'test','font':(timesbd,60)}],},
+    'FURN':{'__IM':[{'imsize':(8.5,11),'nxy':(2,5),'res':150}],
+                 'description':[{'c':[.25,4.5/6],'font':(timesbd,20),'text':'Description:'}], 
+                 'price':[{'c':[.5,3/8],"font":(timesbd,80),'text':VAR}],
+                 'barcode':[{'c':[.9,0],'code':VAR,'underbar':({'show':True,'font':(mini7,20),'underdist':10,'size':20}),'rot':90,'shape':[1.5,30]}],
+                 'month':[{'c':[.95,.9],"font":(timesbd,10),'text':VAR}],
+                 'blurb':[{'c':[0.5,.1],"font":(timesbd,15),'text':'** Items must be picked up before 6pm on the \n  day of purchase. No Exceptions. Thank You! **'}],
+                 'combo':[{'c':[.5,.6],'font':(timesbd,15)}]}
 
 #                  'price':[{'c':[.5,3/8],"font":"timesbd.ttf",'size':120}],
 #                  'barcode':[{'c':[-.05,.65],'rot':0,'underbar':True,'shape':[5,100]}],
@@ -64,31 +74,19 @@ TEMPLATES={
 #                  'month':[{'c':[.95,.9],"font":"timesbd.ttf","size":40}],
 #                  'combo':[{'c':[.5,.6],'font':'timesbd.ttf','size':20,'rot':20}]
 }   
-    #    
-# furnstyle=pandas.DataFrame({'image':{'imsize':(8.5,11),'nxy':(2,5),'res':150},
-#          'description':{'c':[.15,4.5/8],'size':20,'font':'timesbd.ttf','text':'Description:'}, 
-#          'price':{'c':[.5,3/8],"font":"timesbd.ttf",'size':80},
-#          'barcode':{'c':[.8,.1],'underbar':False,'rot':90,'shape':[2,30]},
-#          'underbar':{'font':'MINI 7 Bold.ttf','underdist':10,'size':20},
-#          'month':{'c':[.95,.9],"font":"timesbd.ttf","size":10},
-#          'blurb':{'c':[0.5,.1],"font":"timesbd.ttf","size":15,'text':'** Items must be picked up before 6pm on the \n  day of purchase. No Exceptions. Thank You! **'},
-#          'combo':{'c':[.5,.6],'font':'timesbd.ttf','size':15}})
 
-    #@TODO - dict-able PIL objects,  
-}
+    #    
 #### 
 #FUNCTIONS
 #
 ORIENTATIONS={'portrait':(8.5,11),'landscape':(11,8.5)}
-def newSoldTag(res=100,n=(2,6),lbl=None,side='newsold'):
-  pass
-def soldTag(res=100, n=(2,6),lbl=None,side='oldsold-front',orientation='portrait'):
+
+def soldTag(res=100, n=(2,6),lbl=None,side='oldsold-front',orientation='portrait',**kw):
     o=ORIENTATIONS[orientation]
     relres=res/100
     tagsize=(round(res*o[0]/n[0]),round(res*o[1]/n[1]))    
     tag=Image.new('L',tagsize,color="white")
     dtag=ImageDraw.Draw(tag)
-    print(orientation)
     if 'lbl' in TEMPLATES[side].keys():
         TEMPLATES[side]['lbl'][0]['text']=str(lbl)
     def centertext(d,justify='center',line=0,autopar=False):        
@@ -104,13 +102,53 @@ def soldTag(res=100, n=(2,6),lbl=None,side='oldsold-front',orientation='portrait
                     justamt=[.5*i for i in attsize]
                 elif justify=='left':
                     justamt=(attsize[0]/2,0)
-                dtag.multiline_text([round((tagsize[i]*locrat[i]-justamt[i])) for i in range(2)],att['text'],anchor='center',font=font)#takes the size of the tag, multiplies it by location ratio, then subtracts pixelsize of text - needed bc default action of text is to go from top-left corner, this ends up doing from the center
+                loc=[round((tagsize[i]*locrat[i]-justamt[i])) for i in range(2)]
+                dtag.multiline_text(loc,att['text'],anchor='center',font=font)#takes the size of the tag, multiplies it by location ratio, then subtracts pixelsize of text - needed bc default action of text is to go from top-left corner, this ends up doing from the center
+                if 'bar' in att.keys():
+                    barloc=(loc[0]+attsize[0],loc[1]+attsize[1])
+                    dtag.line((barloc[0],barloc[1],(barloc[0]+10*relres*att['bar'][1]),barloc[1]))
                 #add line here
+
+
     if side.upper() in TEMPLATES.keys():
+        if side.upper()=='NEWSOLD':
+            corns=((.025,.05),(.975,.95))
+            coords=[round(tagsize[i]*corns[j][i]) for j in range(2) for i in range(2)]
+            logo=Image.open(os.path.join(wd,"Logo","NewLogoCentered.png"))
+            tag.paste(logo.resize((round(tagsize[0]/2),round(tagsize[1]/(8)))),(round(tagsize[0]/4),round(tagsize[1]*.05)))
+            dtag.rectangle(coords,width=2,outline='black')
+        elif side.upper()=='FURN':
+            if 'price' in kw.keys():
+                PR=TEMPLATES['FURN']['price'][0]
+                p=kw['price']
+                try:
+                    if int(float(p))==float(p):
+                        P=str(int(p))+'.00'
+                    else:
+                        P="%.2f" %round(float(p),2)
+                    
+                    PR['text']='$'+P
+                except:
+                    print('whoops')
+                print(TEMPLATES['FURN']['price'])
+                centertext(TEMPLATES['FURN']['price'])
+            if 'barcode' in kw.keys():
+                BC=TEMPLATES['FURN']['barcode'][0]
+                BC['code']=kw['barcode']
+                bar=code128.image(BC['code'],thickness=round(relres*BC['shape'][0]),height=round(relres*BC['shape'][1]))
+                bar=bar.convert('RGB') #convert to RGB just in case
+                bar=bar.rotate(BC['rot'],expand=1) 
+            #paste barcode onto canvas
+                barbox=[round(BC['c'][0]*tag.size[0]),round(BC['c'][1]*tag.size[1]),0,0]
+                barbox[2]=barbox[0]+bar.size[0]
+                barbox[3]=barbox[1]+bar.size[1]
+                tag.paste(bar,barbox)
+                
         for t in TEMPLATES[side.upper()].keys():
             for field in TEMPLATES[side.upper()][t]:
-                centertext(TEMPLATES[side.upper()][t])
-    
+                if 'text' in field.keys():
+                    centertext(TEMPLATES[side.upper()][t])
+        
 #    else:
 #        print(side)
 #    if side=='front':
@@ -130,17 +168,12 @@ def soldTag(res=100, n=(2,6),lbl=None,side='oldsold-front',orientation='portrait
     else:
         return None
     
-    if side.upper()=='NEWSOLD':
-        corns=((.025,.05),(.975,.95))
-        coords=[round(tagsize[i]*corns[j][i]) for j in range(2) for i in range(2)]
-        logo=Image.open(os.path.join(wd,"Logo","NewLogoCentered.png"))
-        tag.paste(logo.resize((round(tagsize[0]/2),round(tagsize[1]/10))),(round(tagsize[0]/4),round(tagsize[1]*.05)))
-        dtag.rectangle(coords,width=2,outline='black')
+    
     return tag 
 
 
 #objfn - what to sheetify, n - number of modules in (x-direction, y-direction), lw - linewidth, res - resolution
-def sheetify(objfn,n=(2,6),lw=3,res=100,lbllist=None,side='oldsold-front',orientation='portrait'):
+def sheetify(objfn,n=(2,6),lw=3,res=100,lbllist=None,side='oldsold-front',orientation='portrait',**kw):
     N=n[0]*n[1]
     o=ORIENTATIONS[orientation]
     if len(n)==2:
@@ -159,15 +192,16 @@ def sheetify(objfn,n=(2,6),lw=3,res=100,lbllist=None,side='oldsold-front',orient
     for i in range(nx): 
         for j in range(ny):
             nn=i*n[1]+j#gets current index 1-dimensionally - if order of fors changes this needs to change too
-            obj=objfn(res,n,lbl=lbllist[nn],side=side,orientation=orientation)
+            obj=objfn(res,n,lbl=lbllist[nn],side=side,orientation=orientation,**kw)
             sheet.paste(obj,[round(x) for x in [shtbox[0]+i*shtbox[2],shtbox[1]+j*shtbox[3],shtbox[0]+i*shtbox[2]+obj.size[0],shtbox[1]+j*shtbox[3]+obj.size[1]]])
-            drsh.line( (0,j*sheetsize[1]/ny,sheetsize[0],j*sheetsize[1]/ny), fill=0,width=lw) #horizontals
-        drsh.line( (i*sheetsize[0]/nx,0,i*sheetsize[0]/nx,sheetsize[1]), fill=0,width=lw) #vertical
+            if lw>0:
+                drsh.line( (0,j*sheetsize[1]/ny,sheetsize[0],j*sheetsize[1]/ny), fill=0,width=lw) #horizontals
+                drsh.line( (i*sheetsize[0]/nx,0,i*sheetsize[0]/nx,sheetsize[1]), fill=0,width=lw) #vertical
     return sheet
-def multiSheetRender(objfn,sides=['oldsold-front','oldsold-back'],n=(2,6),lw=3,res=100,lbllist=None,orientation='portrait'):
+def multiSheetRender(objfn,sides=['oldsold-front','oldsold-back'],n=(2,6),lw=3,res=100,lbllist=None,orientation='portrait',**kw):
     sheets=[]
     for s in sides:
-        sheets.append(sheetify(objfn,n,lw,res,lbllist,side=s,orientation=orientation))
+        sheets.append(sheetify(objfn,n,lw,res,lbllist,side=s,orientation=orientation,**kw))
     return sheets
         
 #
@@ -196,7 +230,7 @@ def randomLabels(n=(2,6),numspots=2):
     return ralph
 #highest-level method for this file, can just run w/o arguments for good output
     #
-def renderSheets(n=(2,6),lw=3,res=100,lblmethod='random',numsheets=1,sides=['oldsold-front'],lbldsides=None,orientation='portrait',numrandspots=2):
+def renderSheets(n=(2,6),lw=3,res=100,lblmethod='random',numsheets=1,sides=['oldsold-front'],lbldsides=None,orientation='portrait',numrandspots=2,**kw):
     sheets=[]
     if type(numrandspots)!=int:
         try:
@@ -206,7 +240,7 @@ def renderSheets(n=(2,6),lw=3,res=100,lblmethod='random',numsheets=1,sides=['old
     for sht in range(numsheets):
         if lblmethod=='random':
             lbllist=randomLabels(n=n,numspots=numrandspots)
-        sheets.append(multiSheetRender(objfn=soldTag,n=n,lw=lw,res=res,lbllist=lbllist,sides=sides,orientation=orientation))
+        sheets.append(multiSheetRender(objfn=soldTag,n=n,lw=lw,res=res,lbllist=lbllist,sides=sides,orientation=orientation,**kw))
     return sheets
 #
 def saveSheets(sheets,fn=None):

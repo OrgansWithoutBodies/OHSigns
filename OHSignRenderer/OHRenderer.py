@@ -50,6 +50,13 @@ class BarcodeModule(Module):
         pass
     def renderModule(self):
       self.MOD=code128.image(self.code,thickness=round(self.relres*self.dims[0]),height=round(self.relres*self.dims[1]))
+      # bar=bar.convert('RGB') #convert to RGB just in case
+      #       bar=bar.rotate(refdict['barcode']['rot'],expand=1) 
+      #       #paste barcode onto canvas
+      #       barbox=[round(dyn_look(self,"barcode.pos")[0]),round(dyn_look(self,"barcode.pos")[1]),0,0]
+      #       barbox[2]=barbox[0]+bar.size[0]
+      #       barbox[3]=barbox[1]+bar.size[1]
+            # self.tag.paste(bar,barbox)
       return self.MOD
 class ShapeModule(Module):
     def __init__(self,type,**kw):
