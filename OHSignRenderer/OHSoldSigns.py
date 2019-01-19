@@ -41,20 +41,20 @@ TEMPLATES={
     },
      'NEWSOLD':{#box around sign, 2-3 per page,logo,underlines
          '__IM':[{'rot':90,'res':80,'nxy':(1,2)}],
-         'test':[{'font':(ubuntum,12),'text':"Item Description:",'bar':('after',15),'c':(0.3,0.25)},
-                 {'font':(ubuntum,12),'text':"Date:",'c':(0.3,0.3),'bar':('after',15)},
-                  {'font':(ubuntum,12),'c':(0.4,.55),'text':"Associates Initials:",'bar':('after',15)},
-                  {'c':(0.2,.6), 'font':(ubuntum,12),'text':"Customer Name:",'bar':('after',15)},
-                  {'c':(0.215,.65),'font':(ubuntum,12),'text':"Customer Phone #:",'bar':('after',15)},
-                   {'font':(ubuntum,12),'text':"Delivery Fee:",'c':(.175,.7),'bar':('after',10)},
-                   {'font':(ubuntum,12),'text':"Date Paid:",'c':(.6,.7),'bar':('after',10)},
-                  {'font':(ubuntum,12),'text':"Scheduled Delivery Date:",'c':(.3,.75),'bar':('after',15)},
-                 {'font':(ubuntum,80),'text':'SOLD!','c':(.5,.4)},
-                 {'font':(ubuntum,12),'c':(.5,.8),'text':'Please pick up your items by the end of the day \nunless you have paid for us to Deliver it to you.'},
+         'test':[{'font':(ubuntum,13),'text':"Item Description:",'bar':('after',15),'c':(0.3,0.25)},
+                 {'font':(ubuntum,13),'text':"Date:",'c':(0.3,0.3),'bar':('after',15)},
+                  {'font':(ubuntum,13),'c':(0.21,.525),'text':"Associates Initials:",'bar':('after',15)},
+                  {'c':(0.2,.6), 'font':(ubuntum,13),'text':"Customer Name:",'bar':('after',15)},
+                  {'c':(0.212,.65),'font':(ubuntum,13),'text':"Customer Phone #:",'bar':('after',15)},
+                   {'font':(ubuntum,13),'text':"Delivery Fee:",'c':(.18,.725),'bar':('after',10)},
+                   {'font':(ubuntum,13),'text':"Date Paid:",'c':(.6,.725),'bar':('after',10)},
+                  {'font':(ubuntum,13),'text':"Scheduled Delivery Date:",'c':(.247,.775),'bar':('after',15)},
+                 {'font':(ubuntum,90),'text':'SOLD!','c':(.5,.4)},
+                 {'font':(ubuntum,15),'c':(.5,.85),'text':'Please pick up your items by the end of the day \nunless you have paid for us to Deliver it to you.'},
          
-                   {'font':(ubuntum,12),'text':"Delivery fees",'c':(.2,.9)},
-            {'font':(ubuntum,10),'text':'Vacaville - $30.00','c':(0.5,.9)},
-         {'font':(ubuntum,10),'text':'Fairfield - $45.00','c':(0.5,.935)},
+                   {'font':(ubuntum,12),'text':"Delivery fees:",'c':(.3,.9)},
+            {'font':(ubuntum,12),'text':'Vacaville - $30.00','c':(0.5,.9)},
+         {'font':(ubuntum,12),'text':'Fairfield - $45.00','c':(0.5,.935)},
      ],
      'lbl':[{'c':(.1,.1),'font':(ubuntum,15),'text':VAR}]},
      'TAG':{'__IM':[{'imsize':(5,3.53),'nxy':(1,1),'res':80}],
@@ -105,8 +105,10 @@ def soldTag(res=100, n=(2,6),lbl=None,side='oldsold-front',orientation='portrait
                 loc=[round((tagsize[i]*locrat[i]-justamt[i])) for i in range(2)]
                 dtag.multiline_text(loc,att['text'],anchor='center',font=font)#takes the size of the tag, multiplies it by location ratio, then subtracts pixelsize of text - needed bc default action of text is to go from top-left corner, this ends up doing from the center
                 if 'bar' in att.keys():
-                    barloc=(loc[0]+attsize[0],loc[1]+attsize[1])
-                    dtag.line((barloc[0],barloc[1],(barloc[0]+10*relres*att['bar'][1]),barloc[1]))
+                    if att['bar'][0]=='after':
+                        barloc=(loc[0]+attsize[0],loc[1]+attsize[1])
+                        lineloc=(barloc[0],barloc[1],(barloc[0]+10*relres*att['bar'][1]),barloc[1])
+                    dtag.line(lineloc)
                 #add line here
 
 
