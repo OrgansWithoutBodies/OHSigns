@@ -67,6 +67,7 @@ TEMPLATES={
             'combo':[{'c':[.5,.6],'font':(timesbd,20),'rot':20}]},
 
     'FURN':{'__IM':[{'imsize':(8.5,11),'nxy':(2,5),'res':150}],
+                'lbl':[{'c':(.1,.1),'font':(ubuntum,15),'text':VAR}],
                  'description':[{'c':[.25,4.5/6],'font':(timesbd,20),'text':'Description:'}], 
                  'price':[{'c':[.5,3/8],"font":(timesbd,80),'text':VAR}],
                  'barcode':[{'c':[.9,0],'code':VAR,'underbar':({'show':True,'font':(mini7,20),'underdist':10,'size':20}),'rot':90,'shape':[1.5,30]}],
