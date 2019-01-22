@@ -44,22 +44,28 @@ TEMPLATES={
          'test':[{'font':(ubuntum,13),'text':"Item Description:",'bar':('after',15),'c':(0.3,0.25)},
                  {'font':(ubuntum,13),'text':"Date:",'c':(0.3,0.3),'bar':('after',15)},
                   {'font':(ubuntum,13),'c':(0.21,.525),'text':"Associates Initials:",'bar':('after',15)},
-                  {'c':(0.2,.6), 'font':(ubuntum,13),'text':"Customer Name:",'bar':('after',15)},
-                  {'c':(0.212,.65),'font':(ubuntum,13),'text':"Customer Phone #:",'bar':('after',15)},
-                   {'font':(ubuntum,13),'text':"Delivery Fee:",'c':(.18,.725),'bar':('after',10)},
-                   {'font':(ubuntum,13),'text':"Date Paid:",'c':(.6,.725),'bar':('after',10)},
-                  {'font':(ubuntum,13),'text':"Scheduled Delivery Date:",'c':(.247,.775),'bar':('after',15)},
-                 {'font':(ubuntum,90),'text':'SOLD!','c':(.5,.4)},
-                 {'font':(ubuntum,15),'c':(.5,.85),'text':'Please pick up your items by the end of the day \nunless you have paid for us to Deliver it to you.'},
+                  {'c':(0.2,.575), 'font':(ubuntum,13),'text':"Customer Name:",'bar':('after',15)},
+                  {'c':(0.212,.625),'font':(ubuntum,13),'text':"Customer Phone #:",'bar':('after',15)},
+                   {'font':(ubuntum,13),'text':"Delivery Fee:",'c':(.18,.675),'bar':('after',10)},
+                   {'font':(ubuntum,13),'text':"Date Paid:",'c':(.6,.675),'bar':('after',10)},
+                  {'font':(ubuntum,13),'text':"Scheduled Delivery Date:",'c':(.247,.725),'bar':('after',15)},
+                 {'font':(ubuntum,100),'text':'SOLD!','c':(.5,.4)},
+                 {'font':(ubuntum,15),'c':(.5,.8),'text':'Please pick up your items by the end of the day \nunless you have paid for us to Deliver it to you.'},
          
-                   {'font':(ubuntum,12),'text':"Delivery fees:",'c':(.3,.9)},
-            {'font':(ubuntum,12),'text':'Vacaville - $30.00','c':(0.5,.9)},
-         {'font':(ubuntum,12),'text':'Fairfield - $45.00','c':(0.5,.935)},
-     ],
-     'lbl':[{'c':(.1,.1),'font':(ubuntum,15),'text':VAR}]},
+                    {'font':(ubuntum,12),'text':"Delivery fees:",'c':(.3,.85)},
+                    {'font':(ubuntum,12),'text':'Vacaville - $30.00','c':(0.5,.85)},
+                    {'font':(ubuntum,12),'text':'Fairfield - $45.00','c':(0.5,.885)}],
+            'lbl':[{'c':(.1,.1),'font':(ubuntum,15),'text':VAR}]},
+
+
      'TAG':{'__IM':[{'imsize':(5,3.53),'nxy':(1,1),'res':80}],
-            'lbl':[{'c':(.1,.1),'font':(ubuntum,15),'text':'test'}],
-            'description':[{'c':[.5,1/8],'text':'test','font':(timesbd,60)}],},
+            'lbl':[{'c':(.1,.1),'font':(ubuntum,15),'text':VAR}],
+            'category':[{'c':[.5,1/10],'text':VAR,'font':(timesbd,40)}],
+            'price':[{'c':[.5,3/8],"font":(timesbd,80),'text':VAR}],
+            'barcode':[{'c':[.15,.65],'rot':0,'underbar':{'show':True,'font':(mini7,20),'underdist':10},'shape':[4,80]}],
+            'month':[{'c':[.95,.9],"font":(timesbd,40)}],
+            'combo':[{'c':[.5,.6],'font':(timesbd,20),'rot':20}]},
+
     'FURN':{'__IM':[{'imsize':(8.5,11),'nxy':(2,5),'res':150}],
                  'description':[{'c':[.25,4.5/6],'font':(timesbd,20),'text':'Description:'}], 
                  'price':[{'c':[.5,3/8],"font":(timesbd,80),'text':VAR}],
@@ -68,11 +74,7 @@ TEMPLATES={
                  'blurb':[{'c':[0.5,.1],"font":(timesbd,15),'text':'** Items must be picked up before 6pm on the \n  day of purchase. No Exceptions. Thank You! **'}],
                  'combo':[{'c':[.5,.6],'font':(timesbd,15)}]}
 
-#                  'price':[{'c':[.5,3/8],"font":"timesbd.ttf",'size':120}],
-#                  'barcode':[{'c':[-.05,.65],'rot':0,'underbar':True,'shape':[5,100]}],
-#                  'underbar':[{'font':'MINI 7 Bold.ttf','underdist':10,'size':20}],
-#                  'month':[{'c':[.95,.9],"font":"timesbd.ttf","size":40}],
-#                  'combo':[{'c':[.5,.6],'font':'timesbd.ttf','size':20,'rot':20}]
+                 
 }   
 
     #    
@@ -119,23 +121,19 @@ def soldTag(res=100, n=(2,6),lbl=None,side='oldsold-front',orientation='portrait
             logo=Image.open(os.path.join(wd,"Logo","NewLogoCentered.png"))
             tag.paste(logo.resize((round(tagsize[0]/2),round(tagsize[1]/(8)))),(round(tagsize[0]/4),round(tagsize[1]*.05)))
             dtag.rectangle(coords,width=2,outline='black')
-        elif side.upper()=='FURN':
+        elif side.upper()in ['FURN','TAG']:
+            s=side.upper()
             if 'price' in kw.keys():
-                PR=TEMPLATES['FURN']['price'][0]
+                PR=TEMPLATES[s]['price'][0]
                 p=kw['price']
                 try:
-                    if int(float(p))==float(p):
-                        P=str(int(p))+'.00'
-                    else:
-                        P="%.2f" %round(float(p),2)
-                    
+                    P="%.2f" %round(float(p),2)
                     PR['text']='$'+P
-                except:
+                except:#not a number
                     print('whoops')
-                print(TEMPLATES['FURN']['price'])
-                centertext(TEMPLATES['FURN']['price'])
+                centertext(TEMPLATES[s]['price'])
             if 'barcode' in kw.keys():
-                BC=TEMPLATES['FURN']['barcode'][0]
+                BC=TEMPLATES[s]['barcode'][0]
                 BC['code']=kw['barcode']
                 bar=code128.image(BC['code'],thickness=round(relres*BC['shape'][0]),height=round(relres*BC['shape'][1]))
                 bar=bar.convert('RGB') #convert to RGB just in case
@@ -145,7 +143,10 @@ def soldTag(res=100, n=(2,6),lbl=None,side='oldsold-front',orientation='portrait
                 barbox[2]=barbox[0]+bar.size[0]
                 barbox[3]=barbox[1]+bar.size[1]
                 tag.paste(bar,barbox)
-                
+            if 'category' in kw.keys():
+                if 'category' in TEMPLATES[s].keys():
+                    CT=TEMPLATES[s]['category'][0]
+                    CT['text']=kw['category']
         for t in TEMPLATES[side.upper()].keys():
             for field in TEMPLATES[side.upper()][t]:
                 if 'text' in field.keys():

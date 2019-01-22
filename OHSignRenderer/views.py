@@ -13,21 +13,28 @@ def loadTemplates():
 # 
 def test(request):
     return request
-def renderRequest(request,formobj,**kw):
+def renderRequest(request,soldform,priceform,**kw):
     data={'n':(2,6),'lw':3,'res':100,'lblmethod':'random','numsheets':2}
     if request.method=='POST':
-        form=formobj(request.POST)
+        form=soldform(request.POST)
+        pform=priceform(request.POST)
         if form.is_valid():
             data=form.cleaned_data
             data['n']=(data['nx'],data['ny'])
             data['lblmethod']='random'
+            if pform.is_valid():
+                pdata=pform.cleaned_data
+                for f in ['barcode','price','category']:
+                    data[f]=pdata[f]
         else:
             pass
+
+
     else:
         pass
     # fn=os.path.join(os.getcwd(),'renderedSigns','temp.pdf')
     f='temp.pdf'
-    r=signs.renderSheets(n=data['n'],lw=data['lw'],barcode=data['barcode'],price=data['price'],orientation=data['orientation'],numrandspots=data['numrandspots'],res=data['res'],lblmethod=data['lblmethod'],numsheets=data['numsheets'],sides=data['sides'])
+    r=signs.renderSheets(n=data['n'],lw=data['lw'],category=data['category'],barcode=data['barcode'],price=data['price'],orientation=data['orientation'],numrandspots=data['numrandspots'],res=data['res'],lblmethod=data['lblmethod'],numsheets=data['numsheets'],sides=data['sides'])
     fl,fn=signs.saveSheets(r,fn=f)
     
     # response=FileResponse(fl,as_attachment=True,filename='test.pdf')

@@ -3,7 +3,7 @@
 
 {%block pagecontent%}
 </select>
-<div id='test' class='test'>
+<div id='test' class='test' >
 	<form action="submit" method="post" id='formcont'>
 	{%csrf_token%}
 	{%for field in form%}
@@ -15,8 +15,21 @@
 					
 					<div class="errors">{{form.errors}}</div>
 					<p>
-				{%endfor%}
-				<input type='submit' value='Submit Request'></input>
+		{%endfor%}
+		<div id="pricetagforms">
+		{%for field in pricetag%}
+					<span class='formcontlabel'>
+					{{field.label_tag}}</span>
+					<br>
+					<span class="formcontinp">{{field}}</span>
+					
+					<div class="errors">{{form.errors}}</div>
+					<p>
+
+		{%endfor%}
+	</div>
+	<p>
+		<input type='submit' value='Submit Request'/>
 		</div>
 	</form>
 </div>
@@ -24,15 +37,16 @@
 
 {%block extra_js%}
 <script type="text/JavaScript">
-function sendRenderReq() {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-     alert(document.getElementById("id_nx").value);
-    }
-  };
-  xhttp.open("POST", "submit", true);
-  xhttp.send();
+function togglePricetagForm(){
+	var selectedform=document.getElementById("id_sides")
+	var form= document.getElementById("pricetagforms")	
+	if (selectedform[3].selected==true || selectedform[4].selected==true){
+		form.className='visible'
+	}
+	else{
+		form.className=''
+	}
+	// if form.className
 }
 </script>
 {% endblock extra_js %}

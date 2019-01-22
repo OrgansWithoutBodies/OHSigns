@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+{% block extra_js %}{% endblock extra_js %}
 
 	<link rel="stylesheet" type="text/css" href="{%static 'main.css'%}"> 
 	<title></title>
@@ -11,6 +12,5 @@
 {%block pagecontent%}
 {%endblock pagecontent%}
 
-{% block extra_js %}{% endblock extra_js %}
 </body>
 </html>

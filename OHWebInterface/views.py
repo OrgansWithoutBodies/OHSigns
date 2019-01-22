@@ -5,10 +5,11 @@ from OHSignRenderer import views as renderer
 def req(request):
 	context={
 	'form':SoldTagForm,
+	'pricetag':PriceTagForm,
 	}
 
 	return render(request,"OHWebInterface/submitRenderRequest.html",context)
 
 def sendreq(request):
 	print(request)
-	return renderer.renderRequest(request,formobj=SoldTagForm)
+	return renderer.renderRequest(request,soldform=SoldTagForm,priceform=PriceTagForm)
