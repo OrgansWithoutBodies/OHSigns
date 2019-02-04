@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .forms import *
-from OHSignRenderer import views as renderer
+from ..OHSignRenderer import views as renderer
 # Create your views here.
 def req(request):
 	context={

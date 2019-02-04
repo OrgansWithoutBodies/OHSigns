@@ -17,7 +17,6 @@ from django.contrib import admin
 from django.urls import path,include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('signs/',include('OHWebInterface.urls')),
-    path('render/',include('OHSignRenderer.urls'))
+    path('',include('OHSigns.OHWebInterface.urls')),
+    path('render/',include('OHSigns.OHSignRenderer.urls'))
 ]
