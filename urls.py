@@ -16,7 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 
+app_name="SIGNS"
+
 urlpatterns = [
-    path('',include('OHSigns.OHWebInterface.urls')),
+    path('',include('OHSigns.OHWebInterface.urls',namespace="WEB")),
     path('render/',include('OHSigns.OHSignRenderer.urls'))
 ]
